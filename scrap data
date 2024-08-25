@@ -1,0 +1,30 @@
+import requests 
+from bs4 import BeautifulSoup 
+import pandas as pd
+
+# url of the website to scrape
+url='https://www.justdial.com/Delhi/Technical-Institutes/nct-10599033'
+
+# send a request to fetch the webpage content
+response = requests.get(url)
+
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Extract data
+data = []
+for institute in soup.select('.listing-info'):
+    name = institute.select_one('.title').get_text(strip=True) 
+    Email  = 'N/A'
+    phone = institute.select_one('.contact-number').get_text(strip=True) if institute.select_one('.contact-number') else 'N/A'
+    data.append([name,Email,phone])
+    
+
+# create dataframe to store tha data 
+df = pd.DataFrame(data,columns=['institute name', 'phone number', 'Email'])
+
+#save the data to csv file
+df.to_csv('Delhi_technical_courses.csv', index=False)
+
+from google.colab import files
+
+files.download('Delhi_technical_courses.csv')
